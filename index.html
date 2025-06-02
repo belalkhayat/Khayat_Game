@@ -2,7 +2,8 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>أهلاً بك</title>
+  <title>مرحباً بك في اللعبة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       direction: rtl;
@@ -14,7 +15,7 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      font-family: 'Baloo 2', cursive;
+      font-family: 'Baloo 2', cursive, sans-serif;
       text-align: center;
     }
 
@@ -34,15 +35,16 @@
 
     p {
       font-size: 1.2em;
-      color: #444;
+      color: #333;
       margin-bottom: 30px;
+      max-width: 90%;
     }
 
     .by {
       font-size: 1em;
       color: #333;
       font-weight: bold;
-      margin-top: 15px;
+      margin-top: 10px;
     }
 
     button {
@@ -65,19 +67,16 @@
 
   <img src="icon.png" alt="شعار اللعبة">
   <h1>مرحباً بك في لعبة ذكاء X سرعة!</h1>
-  <p>اختبر سرعتك وذكاءك وتحدَّ أصدقاءك في أجواء مليئة بالحماس!</p>
+  <p>اختبر ذكاءك وسرعتك في التحدي الأكثر متعة وحماس، صممت لتقضي أوقاتاً مليئة بالضحك والمنافسة!</p>
 
   <div class="by">🧑‍💻 تطوير: بلال خياط</div>
-<button onclick="startGame()">ابدأ</button>
 
-<script>
-  function startGame() {
-    window.location.href = "home.html"; // أو الاسم الجديد
-  }
-</script>
+  <button onclick="startGame()">ابدأ</button>
 
-
-  
+  <script>
+    function startGame() {
+      window.location.href = "home.html"; // اسم الصفحة اللي كانت index.html سابقاً
+    }
   </script>
 
 </body>
