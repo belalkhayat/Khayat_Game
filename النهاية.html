@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>نهاية اللعبة - ذكاء X سرعة</title>
+  <style>
+    body {
+      font-family: 'Baloo 2', cursive;
+      direction: rtl;
+      background: linear-gradient(to bottom right, #c2f0f0, #d0f5e8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 3em;
+      color: #0b8c8c;
+      margin-bottom: 20px;
+    }
+
+    .score-box {
+      background: #ffffffcc;
+      padding: 20px 30px;
+      margin: 15px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px #0b8c8c66;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #064d4d;
+      width: 300px;
+    }
+
+    .winner {
+      margin-top: 30px;
+      font-size: 2em;
+      font-weight: bold;
+      color: #27ae60;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background-color: #c0392b;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #a83226;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>نهاية اللعبة 🎉</h1>
+
+  <div class="score-box" id="team1-score"></div>
+  <div class="score-box" id="team2-score"></div>
+
+  <div class="winner" id="winner-text"></div>
+
+  <button onclick="resetFromZero()">إعادة اللعبة من البداية 🔄</button>
+  <button onclick="resetButKeepUsed()">إعادة لعب جديدة بدون تكرار الأسئلة 🔁</button>
+
+  <audio id="click-sound" src="click.mp3"></audio>
+
+  <script>
+    const clickSound = document.getElementById("click-sound");
+
+    const team1 = sessionStorage.getItem("team1") || "فريق 1";
+    const team2 = sessionStorage.getItem("team2") || "فريق 2";
+    const score1 = parseInt(sessionStorage.getItem("team1Score")) || 0;
+    const score2 = parseInt(sessionStorage.getItem("team2Score")) || 0;
+
+    document.getElementById("team1-score").textContent = `${team1}: ${score1} نقطة`;
+    document.getElementById("team2-score").textContent = `${team2}: ${score2} نقطة`;
+
+    const winnerText = document.getElementById("winner-text");
+    if (score1 > score2) {
+      winnerText.textContent = `الفائز هو: ${team1} 🏆`;
+    } else if (score2 > score1) {
+      winnerText.textContent = `الفائز هو: ${team2} 🏆`;
+    } else {
+      winnerText.textContent = "تعادل! 🎯";
+    }
+
+    function resetFromZero() {
+      clickSound.play();
+      sessionStorage.clear();
+      setTimeout(() => {
+        window.location.href = "الواجهة الرئيسية.html";
+      }, 300);
+    }
+
+    function resetButKeepUsed() {
+      clickSound.play();
+
+      const used = sessionStorage.getItem("usedQuestions");
+      sessionStorage.clear();
+      sessionStorage.setItem("usedQuestions", used);
+
+      setTimeout(() => {
+        window.location.href = "الواجهة الرئيسية.html";
+      }, 300);
+    }
+  </script>
+
+</body>
+</html>

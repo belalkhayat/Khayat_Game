@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>ذكاء X سرعة - لوحة الأسئلة</title>
+  <style>
+    body {
+      font-family: 'Baloo 2', cursive;
+      direction: rtl;
+      background-color: #e0f7fa;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      color: #00796b;
+      margin-bottom: 10px;
+    }
+
+    .team-turn {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #004d40;
+      background: #d0f0e0;
+      border: 2px dashed #00796b;
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      box-shadow: 0 0 10px #00968844;
+    }
+
+    .teams-display {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #004d40;
+    }
+
+    .score {
+      display: block;
+      font-size: 1.4em;
+      color: #00796b;
+      margin-top: 5px;
+    }
+
+    .board {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .category {
+      background: #ffffffcc;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #00968866;
+      padding: 15px;
+      width: 220px;
+      text-align: center;
+    }
+
+    .category-name {
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #004d40;
+      margin-bottom: 10px;
+    }
+
+    .remaining-count {
+      font-size: 0.9em;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .points {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .point-box {
+      background: linear-gradient(145deg, #009688, #00796b);
+      color: white;
+      font-weight: bold;
+      padding: 12px;
+      width: 60px;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 0 6px #004d40;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .point-box:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 12px #004d40cc;
+    }
+
+    .used {
+      background: #cccccc !important;
+      color: #666 !important;
+      cursor: default !important;
+      box-shadow: none !important;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>ذكاء X سرعة</h1>
+
+  <div class="team-turn" id="current-team-name">دور الفريق</div>
+
+  <div class="teams-display">
+    <div>
+      <span id="team1-name">فريق 1</span>
+      <span class="score" id="team1-score">0</span>
+    </div>
+    <div>
+      <span id="team2-name">فريق 2</span>
+      <span class="score" id="team2-score">0</span>
+    </div>
+  </div>
+
+  <div class="board" id="categories-board"></div>
+
+  <audio id="click-sound" src="click.mp3"></audio>
+
+  <script>
+    const clickSound = document.getElementById("click-sound");
+
+    const team1Name = sessionStorage.getItem('team1') || 'فريق 1';
+    const team2Name = sessionStorage.getItem('team2') || 'فريق 2';
+    const team1Score = parseInt(sessionStorage.getItem('team1Score')) || 0;
+    const team2Score = parseInt(sessionStorage.getItem('team2Score')) || 0;
+    const currentTeam = parseInt(sessionStorage.getItem('currentTeam')) || 1;
+
+    document.getElementById('team1-name').textContent = team1Name;
+    document.getElementById('team2-name').textContent = team2Name;
+    document.getElementById('team1-score').textContent = team1Score;
+    document.getElementById('team2-score').textContent = team2Score;
+    document.getElementById('current-team-name').textContent = `دور الفريق: ${currentTeam === 1 ? team1Name : team2Name}`;
+
+    const categories = JSON.parse(sessionStorage.getItem('categories')) || [];
+    const board = document.getElementById('categories-board');
+    const usedQuestions = JSON.parse(sessionStorage.getItem('usedQuestions') || '{}');
+
+    const levels = [200, 400, 600];
+    const maxPerLevel = 2;
+
+    categories.forEach(category => {
+      let remainingCount = 0;
+
+      levels.forEach(points => {
+        for (let i = 0; i < maxPerLevel; i++) {
+          const key = `${category}_${points}_${i}`;
+          if (!usedQuestions[key]) remainingCount++;
+        }
+      });
+
+      const categoryDiv = document.createElement('div');
+      categoryDiv.className = 'category';
+
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'category-name';
+      nameDiv.textContent = category;
+      categoryDiv.appendChild(nameDiv);
+
+      const countDiv = document.createElement('div');
+      countDiv.className = 'remaining-count';
+      countDiv.textContent = `المتبقي: ${remainingCount} سؤال`;
+      categoryDiv.appendChild(countDiv);
+
+      const pointsDiv = document.createElement('div');
+      pointsDiv.className = 'points';
+
+      levels.forEach(points => {
+        for (let i = 0; i < maxPerLevel; i++) {
+          const pointBox = document.createElement('div');
+          pointBox.className = 'point-box';
+          pointBox.textContent = points;
+
+          const key = `${category}_${points}_${i}`;
+          if (usedQuestions[key]) {
+            pointBox.classList.add("used");
+          } else {
+            pointBox.addEventListener("click", () => {
+              clickSound.play();
+              sessionStorage.setItem('currentCategory', category);
+              sessionStorage.setItem('currentPoints', points);
+              sessionStorage.setItem('currentIndex', i);
+              window.location.href = 'السؤال.html';
+            });
+          }
+
+          pointsDiv.appendChild(pointBox);
+        }
+      });
+
+      categoryDiv.appendChild(pointsDiv);
+      board.appendChild(categoryDiv);
+    });
+  </script>
+
+</body>
+</html>
