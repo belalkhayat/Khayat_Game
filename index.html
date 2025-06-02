@@ -1,226 +1,80 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <title>ذكاء X سرعة</title>
+  <meta charset="UTF-8">
+  <title>أهلاً بك</title>
   <style>
     body {
-      font-family: 'Baloo 2', cursive;
       direction: rtl;
-      background: linear-gradient(to bottom right, #a0e9ff, #b8f2d9);
-      padding: 40px;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #a0f0ff, #d4fce0);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: 'Baloo 2', cursive;
       text-align: center;
     }
 
-    .category-group {
+    img {
+      width: 150px;
+      height: 150px;
+      border-radius: 30px;
+      box-shadow: 0 0 15px #00796b88;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      color: #00695c;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.2em;
+      color: #444;
       margin-bottom: 30px;
     }
 
-    .group-title {
-      font-size: 1.4em;
-      font-weight: bold;
-      color: #064d4d;
-      margin-bottom: 10px;
-      border-bottom: 2px dashed #064d4d;
-      display: inline-block;
-      padding-bottom: 5px;
-    }
-
-    .category-box {
-      display: inline-block;
-      margin: 8px;
-      padding: 15px 25px;
-      border-radius: 20px;
-      background: #09a09a;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .category-box.selected {
-      background: #064d4d;
-    }
-
-    .category-box.disabled {
-      background: #999;
-      color: #ccc;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    input[type="text"] {
-      padding: 10px;
+    .by {
       font-size: 1em;
-      margin: 10px;
-      border-radius: 10px;
-      border: 2px solid #09a09a;
+      color: #333;
+      font-weight: bold;
+      margin-top: 15px;
     }
 
     button {
       padding: 15px 30px;
       font-size: 1.2em;
-      margin: 15px;
       border: none;
-      border-radius: 15px;
-      cursor: pointer;
+      background-color: #00796b;
       color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
-    #start-btn {
-      background-color: #064d4d;
-    }
-
-    #reset-btn {
-      background-color: #c0392b;
-    }
-
-    h2 {
-      margin-top: 30px;
-      color: #064d4d;
+    button:hover {
+      background-color: #004d40;
     }
   </style>
-  
-  <link rel="manifest" href="manifest.json" />
-<link rel="icon" type="image/png" href="icon.png" />
-<meta name="theme-color" content="#00796b" />
-
 </head>
 <body>
 
-  <h1>ذكاء X سرعة</h1>
+  <img src="icon.png" alt="شعار اللعبة">
+  <h1>مرحباً بك في لعبة ذكاء X سرعة!</h1>
+  <p>اختبر سرعتك وذكاءك وتحدَّ أصدقاءك في أجواء مليئة بالحماس!</p>
 
-  <input type="text" id="team1-name" placeholder="اسم الفريق 1" />
-  <input type="text" id="team2-name" placeholder="اسم الفريق 2" />
+  <div class="by">🧑‍💻 تطوير: بلال خياط</div>
 
-  <h2>اختر حتى 6 فئات (المتاحة فقط)</h2>
-  <div id="categories-container"></div>
-
-  <button id="start-btn">بدء لعبة جديدة</button>
-  <button id="reset-btn">إعادة اللعبة من الصفر</button>
-
-  <audio id="click-sound" src="click.mp3"></audio>
+  <button onclick="startGame()">ابدأ</button>
 
   <script>
-    const clickSound = document.getElementById("click-sound");
-    const categoriesContainer = document.getElementById("categories-container");
-
-    const allCategories = {
-      "إسلامية": ["دين", "قصص الأنبياء", "السيرة النبوية"],
-      "أنمي ومسلسلات": ["ناروتو", "ون بيس", "كونان"],
-      "🎬 ترفيهي": ["أفلام كرتون زمان", "ذكاء وسرعة بديهة"],
-      "🧒 أطفال": ["أسئلة رياض أطفال", "حيوانات", "فواكه وخضار"]
-    };
-
-    const maxPerLevel = 2;
-    const levels = [200, 400, 600];
-    let selectedCategories = [];
-    let questionData = {};
-    let usedQuestions = JSON.parse(sessionStorage.getItem("usedQuestions") || "{}");
-
-    function calculateRemainingRounds(categoryName) {
-      const levelCounts = levels.map(level => {
-        const total = (questionData[categoryName]?.[level]?.length || 0);
-        let used = 0;
-        for (let i = 0; i < total; i++) {
-          const key = `${categoryName}_${level}_${i}`;
-          if (usedQuestions[key]) used++;
-        }
-        return total - used;
-      });
-      return Math.min(...levelCounts);
+    function startGame() {
+      window.location.href = "index.html";
     }
-
-    function renderCategories() {
-      categoriesContainer.innerHTML = "";
-      for (const groupName in allCategories) {
-        const groupDiv = document.createElement("div");
-        groupDiv.className = "category-group";
-
-        const title = document.createElement("div");
-        title.className = "group-title";
-        title.textContent = groupName;
-        groupDiv.appendChild(title);
-
-        allCategories[groupName].forEach(cat => {
-          const box = document.createElement("div");
-          box.className = "category-box";
-
-          const remainingRounds = calculateRemainingRounds(cat);
-          box.textContent = `${cat} (${remainingRounds} جولة متبقية)`;
-
-          if (remainingRounds <= 0) {
-            box.classList.add("disabled");
-          } else {
-            box.addEventListener("click", () => {
-              clickSound.play();
-              if (box.classList.contains("selected")) {
-                box.classList.remove("selected");
-                selectedCategories = selectedCategories.filter(c => c !== cat);
-              } else {
-                if (selectedCategories.length < 6) {
-                  box.classList.add("selected");
-                  selectedCategories.push(cat);
-                } else {
-                  alert("يمكنك اختيار 6 فئات فقط");
-                }
-              }
-            });
-          }
-
-          groupDiv.appendChild(box);
-        });
-
-        categoriesContainer.appendChild(groupDiv);
-      }
-    }
-
-    document.getElementById("start-btn").addEventListener("click", () => {
-      clickSound.play();
-      const name1 = document.getElementById("team1-name").value.trim();
-      const name2 = document.getElementById("team2-name").value.trim();
-
-      if (!name1 || !name2) {
-        alert("يرجى إدخال أسماء الفريقين");
-        return;
-      }
-
-      if (selectedCategories.length !== 6) {
-        alert("يرجى اختيار 6 فئات فقط");
-        return;
-      }
-
-      sessionStorage.setItem("team1", name1);
-      sessionStorage.setItem("team2", name2);
-      sessionStorage.setItem("categories", JSON.stringify(selectedCategories));
-      sessionStorage.setItem("team1Score", "0");
-      sessionStorage.setItem("team2Score", "0");
-      sessionStorage.setItem("currentTeam", "1");
-
-      window.location.href = "board.html";
-    });
-
-    document.getElementById("reset-btn").addEventListener("click", () => {
-      clickSound.play();
-      if (confirm("هل أنت متأكد أنك تريد إعادة اللعبة من الصفر؟ سيتم مسح جميع الأسئلة المستخدمة!")) {
-        sessionStorage.clear();
-        alert("تمت إعادة التهيئة. يمكنك الآن اختيار فئات جديدة.");
-        location.reload();
-      }
-    });
-
-    // تحميل الأسئلة
-    fetch("questions.json")
-      .then(res => res.json())
-      .then(data => {
-        questionData = data;
-        sessionStorage.setItem("questionsDatabase", JSON.stringify(data));
-        renderCategories();
-      })
-      .catch(err => {
-        alert("تعذر تحميل الأسئلة");
-        console.error(err);
-      });
   </script>
 
 </body>
