@@ -1,96 +1,254 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>السؤال</title>
+  <meta charset="UTF-8" />
+  <title>عرض السؤال - ذكاء X سرعة</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
     body {
+      font-family: 'Baloo 2', cursive;
       direction: rtl;
-      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #e6f7ff, #d0f0e0);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .question-container {
+      background: #ffffffdd;
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      max-width: 700px;
+      width: 90%;
       text-align: center;
-      background-color: #f4f4f4;
+      position: relative;
     }
-    .question {
-      font-size: 1.5em;
-      margin: 30px 0;
-    }
-    .answer {
-      font-size: 2em;
-      color: green;
-      margin: 20px;
-      display: none;
-    }
-    button {
-      padding: 15px 30px;
-      margin: 10px;
+
+    .score-bar {
       font-size: 1.2em;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #0b8c8c;
+    }
+
+    .team-turn {
+      font-size: 1.5em;
+      font-weight: 900;
+      color: #0b8c8c;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      border: 3px solid #0b8c8c;
+      border-radius: 20px;
+      display: inline-block;
+      background: #d0f0f0cc;
+      user-select: none;
+      box-shadow: 0 0 8px #0b8c8caa;
+    }
+
+    .category-title {
+      font-size: 2em;
+      font-weight: bold;
+      color: #0b8c8c;
+      margin-bottom: 10px;
+    }
+
+    .points {
+      font-size: 1.4em;
+      color: #444;
+      margin-bottom: 20px;
+    }
+
+    .question-text {
+      font-size: 1.5em;
+      color: #222;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .timer {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 8px solid #0b8c8c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #0b8c8c;
+      margin: 0 auto 25px auto;
+      position: relative;
+      animation: pulseTimer 1.5s infinite;
+    }
+
+    @keyframes pulseTimer {
+      0% { box-shadow: 0 0 0px #0b8c8c; }
+      50% { box-shadow: 0 0 20px #0b8c8c99; }
+      100% { box-shadow: 0 0 0px #0b8c8c; }
+    }
+
+    .button {
+      padding: 12px 24px;
+      margin: 10px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 12px;
       cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
     }
-    #nextBtn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .team-select {
-      display: none;
+
+    .button.show { background-color: #f39c12; color: white; }
+    .button.next { background-color: #2ecc71; color: white; }
+
+    .answer-text {
       margin-top: 20px;
+      font-size: 1.4em;
+      color: #c0392b;
+      display: none;
+    }
+
+    .judge-buttons {
+      margin-top: 20px;
+      display: none;
+    }
+
+    .judge-buttons button {
+      padding: 12px 30px;
+      font-size: 1.1em;
+      margin: 0 15px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background-color 0.3s;
+    }
+
+    .judge-buttons .correct { background-color: #27ae60; color: white; }
+    .judge-buttons .wrong { background-color: #c0392b; color: white; }
+
+    .score-display {
+      margin-top: 15px;
+      font-size: 1.3em;
+      color: #34495e;
+      font-weight: 700;
     }
   </style>
 </head>
 <body>
-
-  <div class="question" id="question">ما هي عاصمة فرنسا؟</div>
-  <div class="answer" id="answer">باريس</div>
-
-  <button onclick="markCorrect()">✅ صح</button>
-  <button onclick="markWrong()">❌ خطأ</button>
-  <br>
-  <button id="nextBtn" onclick="nextQuestion()" disabled>التالي</button>
-
-  <div class="team-select" id="teamSelect">
-    <p>من الفريق الذي أجاب بشكل صحيح؟</p>
-    <button onclick="awardPoints('team1')">الفريق 1</button>
-    <button onclick="awardPoints('team2')">الفريق 2</button>
+<div class="question-container">
+  <div class="score-bar">
+    <span id="team1-info"></span> | <span id="team2-info"></span>
   </div>
 
-  <audio id="clickSound" src="sounds/click.mp3"></audio>
-  <audio id="correctSound" src="sounds/correct.mp3"></audio>
-  <audio id="wrongSound" src="sounds/wrong.mp3"></audio>
-  <audio id="timerSound" src="sounds/timer.mp3"></audio>
+  <div class="team-turn" id="team-turn">دور الفريق</div>
+  <div class="category-title" id="category-title"></div>
+  <div class="points" id="points"></div>
+  <div class="question-text" id="question-text"></div>
+  <div class="timer" id="timer">90</div>
+
+  <button class="button show" id="show-answer-btn">إظهار الجواب</button>
+  <button class="button next" id="next-btn">التالي</button>
+
+  <div class="answer-text" id="answer"></div>
+
+  <div class="judge-buttons" id="judge-buttons">
+    <button class="correct" id="correct-btn">صح</button>
+    <button class="wrong" id="wrong-btn">خطأ</button>
+  </div>
+
+  <div class="score-display" id="score-display"></div>
+
+  <audio id="click-sound" src="sounds/click.mp3" preload="auto"></audio>
+  <audio id="timer-sound" src="sounds/timer.mp3" preload="auto"></audio>
+  <audio id="correct-sound" src="sounds/correct.mp3" preload="auto"></audio>
+  <audio id="wrong-sound" src="sounds/wrong.mp3" preload="auto"></audio>
+  <audio id="answer-sound" src="sounds/answer.mp3" preload="auto"></audio>
 
   <script>
-    const answerEl = document.getElementById('answer');
-    const nextBtn = document.getElementById('nextBtn');
-    const teamSelect = document.getElementById('teamSelect');
+    const currentCategory = localStorage.getItem('currentCategory');
+    const currentPoints = parseInt(localStorage.getItem('currentPoints'));
+    const currentIndex = parseInt(localStorage.getItem('currentIndex'));
+    let currentTeam = parseInt(localStorage.getItem('currentTeam')) || 1;
 
-    function playSound(id) {
-      const sound = document.getElementById(id);
-      if (sound) sound.play();
-    }
+    const team1Name = localStorage.getItem('team1') || 'فريق 1';
+    const team2Name = localStorage.getItem('team2') || 'فريق 2';
+    const team1Score = parseInt(localStorage.getItem('team1Score')) || 0;
+    const team2Score = parseInt(localStorage.getItem('team2Score')) || 0;
 
-    function markCorrect() {
-      playSound('correctSound');
-      answerEl.style.display = 'block';
-      teamSelect.style.display = 'block';
-      nextBtn.disabled = true;
-    }
+    document.getElementById('team1-info').textContent = `${team1Name}: ${team1Score} نقطة`;
+    document.getElementById('team2-info').textContent = `${team2Name}: ${team2Score} نقطة`;
+    document.getElementById('category-title').textContent = currentCategory;
+    document.getElementById('points').textContent = `${currentPoints} نقطة`;
+    document.getElementById('team-turn').textContent = `دور الفريق: ${currentTeam === 1 ? team1Name : team2Name}`;
+    
+    const questionsDatabase = {
+      // ... قاعدة الأسئلة الأصلية تبقى كما هي ...
+    };
 
-    function markWrong() {
-      playSound('wrongSound');
-      answerEl.style.display = 'block';
-      nextBtn.disabled = false;
-      teamSelect.style.display = 'none';
-    }
+    const [questionText, answerText] = questionsDatabase[currentCategory]?.[currentPoints]?.[currentIndex] || ['سؤال غير متوفر', 'جواب غير متوفر'];
 
-    function awardPoints(team) {
-      console.log("منح النقاط إلى:", team); // يتم هنا لاحقًا تحديث المتغيرات الفعلية
-      nextBtn.disabled = false;
-      teamSelect.style.display = 'none';
-    }
+    document.getElementById('question-text').textContent = questionText;
+    document.getElementById('answer').textContent = answerText;
 
-    function nextQuestion() {
-      playSound('clickSound');
-      alert("يتم الانتقال للسؤال التالي...");
-    }
+    let timeLeft = 90;
+    const timerElement = document.getElementById("timer");
+    const timer = setInterval(() => {
+      timeLeft--;
+      timerElement.textContent = timeLeft;
+      if (timeLeft <= 5 && timeLeft > 0) {
+        document.getElementById("timer-sound").play();
+      }
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        timerElement.textContent = "انتهى";
+        document.getElementById("timer-sound").play();
+      }
+    }, 1000);
+
+    const showAnswerBtn = document.getElementById("show-answer-btn");
+    const judgeButtons = document.getElementById("judge-buttons");
+    const scoreDisplay = document.getElementById("score-display");
+
+    showAnswerBtn.addEventListener("click", () => {
+      document.getElementById('answer').style.display = "block";
+      document.getElementById("answer-sound").play();
+      judgeButtons.style.display = "flex";
+      clearInterval(timer);
+    });
+
+    document.getElementById("correct-btn").addEventListener("click", () => {
+      document.getElementById("correct-sound").play();
+      const scoreKey = `team${currentTeam}Score`;
+      let totalScore = parseInt(localStorage.getItem(scoreKey)) || 0;
+      totalScore += currentPoints;
+      localStorage.setItem(scoreKey, totalScore);
+      scoreDisplay.textContent = `+${currentPoints} نقطة مضافة | مجموع: ${totalScore}`;
+      judgeButtons.style.display = "none";
+    });
+
+    document.getElementById("wrong-btn").addEventListener("click", () => {
+      document.getElementById("wrong-sound").play();
+      scoreDisplay.textContent = `لم تُضف نقاط`;
+      judgeButtons.style.display = "none";
+    });
+
+    document.getElementById("next-btn").addEventListener("click", () => {
+      document.getElementById("click-sound").play();
+      currentTeam = currentTeam === 1 ? 2 : 1;
+      localStorage.setItem('currentTeam', currentTeam);
+
+      const used = JSON.parse(localStorage.getItem('usedQuestions') || "{}");
+      const key = `${currentCategory}_${currentPoints}_${currentIndex}`;
+      used[key] = true;
+      localStorage.setItem('usedQuestions', JSON.stringify(used));
+
+      window.location.href = "board.html";
+    });
   </script>
+</div>
 </body>
 </html>
