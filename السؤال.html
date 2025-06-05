@@ -36,7 +36,6 @@
     .btn-secondary { background: #2980b9; color: white; }
     .btn-info { background: #16a085; color: white; }
     .btn-warning { background: #f39c12; color: white; }
-    .help-buttons { margin: 15px 0; }
     .team-turn, .points {
       font-size: 1.3em;
       color: #004d40;
@@ -53,22 +52,6 @@
       color: #004d40;
       display: none;
     }
-    #audience-status {
-      font-size: 1.3em;
-      font-weight: bold;
-      color: #8e44ad;
-      display: none;
-    }
-    #audience-chart {
-      display: none;
-      margin-top: 20px;
-    }
-    #countdown {
-      margin-top: 10px;
-      font-size: 1.2em;
-      color: #c0392b;
-      font-weight: bold;
-    }
     .bar {
       height: 28px;
       background-color: #16a085;
@@ -79,17 +62,34 @@
       font-weight: bold;
       text-align: right;
     }
-    .rolling {
-      animation: roll 0.6s infinite alternate;
+    #audience-chart, #countdown {
+      display: none;
+      margin-top: 20px;
+      font-size: 1.3em;
+      font-weight: bold;
       color: #8e44ad;
     }
-    @keyframes roll {
-      from { transform: scale(1); opacity: 0.6; }
-      to { transform: scale(1.2); opacity: 1; }
+
+    /* تأثير الإجابة الصحيحة والخاطئة */
+    .shake {
+      animation: shake 0.4s ease-in-out;
+      background-color: #f8d7da !important;
     }
-    @keyframes flashText {
-      from { opacity: 0.5; }
-      to   { opacity: 1; transform: scale(1.05); }
+    .flash-success {
+      animation: flashGreen 0.6s ease-in-out;
+      background-color: #d4edda !important;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      50% { transform: translateX(8px); }
+      75% { transform: translateX(-8px); }
+      100% { transform: translateX(0); }
+    }
+    @keyframes flashGreen {
+      0% { opacity: 0.8; }
+      50% { background-color: #c3e6cb; }
+      100% { opacity: 1; }
     }
   </style>
 </head>
@@ -98,7 +98,7 @@
     <div class="team-turn" id="team-turn"></div>
     <div class="points" id="points"></div>
 
-    <div class="help-buttons">
+    <div>
       <button class="btn btn-info" id="audience-btn">🎤 الجمهور</button>
       <button class="btn btn-warning" id="luck-btn">🎲 نرد الحظ</button>
     </div>
@@ -107,8 +107,6 @@
     <button class="btn btn-secondary" id="show-answer-btn">👁️ إظهار الجواب</button>
     <div id="answer-box"></div>
     <div id="luck-result"></div>
-    <audio id="crowd-sound" src="crowd.mp3"></audio>
-    <div id="audience-status">📊 جارٍ جمع آراء الجمهور...</div>
     <div id="audience-chart"></div>
     <div id="countdown"></div>
 
@@ -117,84 +115,166 @@
       <button class="btn btn-danger" id="wrong-btn">❌ إجابة خاطئة</button>
     </div>
   </div>
-<script>
-  const currentTeam = parseInt(sessionStorage.getItem("currentTeam")) || 1;
-  const points = parseInt(sessionStorage.getItem("currentPoints")) || 200;
-  const correctAnswer = sessionStorage.getItem("currentAnswer") || "...";
-  const question = sessionStorage.getItem("currentQuestion") || "...";
-  const team1 = sessionStorage.getItem("team1") || "فريق 1";
-  const team2 = sessionStorage.getItem("team2") || "فريق 2";
 
-  document.getElementById("team-turn").textContent = `دور الفريق: ${currentTeam === 1 ? team1 : team2}`;
-  document.getElementById("points").textContent = `النقاط: ${points}`;
-  document.getElementById("question-text").textContent = question;
+  <!-- الأصوات -->
+  <audio id="crowd-sound" src="crowd.mp3"></audio>
+  <audio id="luck-sound" src="select.mp3"></audio>
+  <audio id="wrong-sound" src="wrong.mp3"></audio>
+  <!-- أصوات صحيحة متعددة -->
+  <audio class="correct-sound" src="correct1.mp3"></audio>
+  <audio class="correct-sound" src="correct2.mp3"></audio>
+  <audio class="correct-sound" src="correct3.mp3"></audio>
+  <audio class="correct-sound" src="correct4.mp3"></audio>
+  <audio class="correct-sound" src="correct5.mp3"></audio>
+  <audio class="correct-sound" src="correct6.mp3"></audio>
+  <audio class="correct-sound" src="correct7.mp3"></audio>
+  <audio class="correct-sound" src="correct8.mp3"></audio>
+  <audio class="correct-sound" src="correct9.mp3"></audio>
+  <audio class="correct-sound" src="correct10.mp3"></audio>
 
-  document.getElementById("show-answer-btn").addEventListener("click", () => {
-    const box = document.getElementById("answer-box");
-    box.textContent = `الإجابة الصحيحة: ${correctAnswer}`;
-    box.style.display = "block";
-  });
+  <script>
+    const currentTeam = parseInt(sessionStorage.getItem("currentTeam")) || 1;
+    const points = parseInt(sessionStorage.getItem("currentPoints")) || 200;
+    const correctAnswer = sessionStorage.getItem("currentAnswer") || "...";
+    const question = sessionStorage.getItem("currentQuestion") || "...";
+    const team1 = sessionStorage.getItem("team1") || "فريق 1";
+    const team2 = sessionStorage.getItem("team2") || "فريق 2";
 
-  // اسأل الجمهور
-  document.getElementById("audience-btn").addEventListener("click", () => {
-    const key = currentTeam === 1 ? "team1UsedAudience" : "team2UsedAudience";
-    if (sessionStorage.getItem(key) === "true") {
-      alert("❌ تم استخدام الجمهور مسبقاً");
-      return;
-    }
-    sessionStorage.setItem(key, "true");
+    document.getElementById("team-turn").textContent = `دور الفريق: ${currentTeam === 1 ? team1 : team2}`;
+    document.getElementById("points").textContent = `النقاط: ${points}`;
+    document.getElementById("question-text").textContent = question;
 
-    const chart = document.getElementById("audience-chart");
-    const countdown = document.getElementById("countdown");
-    const status = document.getElementById("audience-status");
-    const audio = document.getElementById("crowd-sound");
+    document.getElementById("show-answer-btn").addEventListener("click", () => {
+      const box = document.getElementById("answer-box");
+      box.textContent = `الإجابة الصحيحة: ${correctAnswer}`;
+      box.style.display = "block";
+    });
 
-    chart.innerHTML = "";
-    chart.style.display = "none";
+    document.getElementById("correct-btn").addEventListener("click", () => {
+      const body = document.body;
+      const sounds = document.querySelectorAll(".correct-sound");
+      const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+      randomSound.play();
+      body.classList.add("flash-success");
+      setTimeout(() => body.classList.remove("flash-success"), 500);
 
-    status.style.display = "block";
-    status.style.animation = "flashText 0.5s ease-in-out infinite alternate";
-    audio.play();
+      const teamKey = currentTeam === 1 ? "team1Score" : "team2Score";
+      const opponentKey = currentTeam === 1 ? "team2Score" : "team1Score";
+      let currentScore = parseInt(sessionStorage.getItem(teamKey)) || 0;
+      let opponentScore = parseInt(sessionStorage.getItem(opponentKey)) || 0;
+      let earned = points;
 
-    setTimeout(() => {
-      status.style.display = "none";
-      status.style.animation = "none";
-      chart.style.display = "block";
-
-      const options = ["أ", "ب", "ج", "د"];
-      const correctIndex = Math.floor(Math.random() * 4);
-      const votes = [0, 0, 0, 0];
-      votes[correctIndex] = 55 + Math.floor(Math.random() * 16);
-      let remaining = 100 - votes[correctIndex];
-      const others = [0, 1, 2, 3].filter(i => i !== correctIndex);
-      for (let i = 0; i < others.length; i++) {
-        const share = i < others.length - 1 ? Math.floor(Math.random() * (remaining + 1)) : remaining;
-        votes[others[i]] = share;
-        remaining -= share;
+      const effect = sessionStorage.getItem("luckEffect");
+      if (effect === "double") earned *= 2;
+      else if (effect === "half") earned = Math.floor(earned / 2);
+      else if (effect === "minus") {
+        sessionStorage.setItem(teamKey, Math.max(currentScore - earned, 0));
+        alert(`❌ خصم النقاط: -${earned}`);
+        sessionStorage.removeItem("luckEffect");
+        sessionStorage.setItem("currentTeam", currentTeam === 1 ? "2" : "1");
+        return window.location.href = "board.html";
+      } else if (effect === "cancel") {
+        alert("🚫 تم إلغاء هذه الفرصة.");
+        sessionStorage.removeItem("luckEffect");
+        sessionStorage.setItem("currentTeam", currentTeam === 1 ? "2" : "1");
+        return window.location.href = "board.html";
       }
 
-      options.forEach((label, i) => {
-        const bar = document.createElement("div");
-        bar.className = "bar";
-        bar.style.width = votes[i] + "%";
-        bar.textContent = `${label}: ${votes[i]}٪`;
-        chart.appendChild(bar);
-      });
+      sessionStorage.setItem(teamKey, currentScore + earned);
+      sessionStorage.removeItem("luckEffect");
 
-      let seconds = 10;
+      if (sessionStorage.getItem("stealMode") === "true") {
+        sessionStorage.setItem(opponentKey, Math.max(opponentScore - points, 0));
+        sessionStorage.removeItem("stealMode");
+        alert(`🧨 تم خصم ${points} من الفريق الخصم!`);
+      }
+
+      alert(`✅ تمت إضافة ${earned} نقطة!`);
+      sessionStorage.setItem("currentTeam", currentTeam === 1 ? "2" : "1");
+      window.location.href = "board.html";
+    });
+
+    document.getElementById("wrong-btn").addEventListener("click", () => {
+      const body = document.body;
+      document.getElementById("wrong-sound").play();
+      body.classList.add("shake");
+      setTimeout(() => body.classList.remove("shake"), 500);
+      alert("❌ إجابة خاطئة، لا نقاط.");
+      sessionStorage.setItem("currentTeam", currentTeam === 1 ? "2" : "1");
+      window.location.href = "board.html";
+    });
+  </script>
+  <script>
+  const audienceBtn = document.getElementById("audience-btn");
+  const luckBtn = document.getElementById("luck-btn");
+
+  audienceBtn?.addEventListener("click", () => {
+    audienceBtn.disabled = true;
+    audienceBtn.textContent = "🎤 الجمهور (تم الاستخدام)";
+    document.getElementById("crowd-sound").play();
+    const chart = document.getElementById("audience-chart");
+    const countdown = document.getElementById("countdown");
+    chart.innerHTML = "";
+    chart.style.display = "block";
+
+    const options = ["أ", "ب", "ج", "د"];
+    const correctIndex = Math.floor(Math.random() * 4);
+    const votes = [0, 0, 0, 0];
+    votes[correctIndex] = 55 + Math.floor(Math.random() * 16);
+    let remaining = 100 - votes[correctIndex];
+    const others = [0, 1, 2, 3].filter(i => i !== correctIndex);
+    for (let i = 0; i < others.length; i++) {
+      const share = i < others.length - 1 ? Math.floor(Math.random() * (remaining + 1)) : remaining;
+      votes[others[i]] = share;
+      remaining -= share;
+    }
+
+    options.forEach((label, i) => {
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      bar.style.width = votes[i] + "%";
+      bar.textContent = `${label}: ${votes[i]}٪`;
+      chart.appendChild(bar);
+    });
+
+    let seconds = 10;
+    countdown.textContent = `⏳ ${seconds} ثانية...`;
+    countdown.style.display = "block";
+    const timer = setInterval(() => {
+      seconds--;
       countdown.textContent = `⏳ ${seconds} ثانية...`;
-      const timer = setInterval(() => {
-        seconds--;
-        countdown.textContent = `⏳ ${seconds} ثانية...`;
-        if (seconds <= 0) {
-          clearInterval(timer);
-          chart.style.display = "none";
-          countdown.textContent = "";
-        }
-      }, 1000);
-    }, 2000);
+      if (seconds <= 0) {
+        clearInterval(timer);
+        chart.style.display = "none";
+        countdown.style.display = "none";
+      }
+    }, 1000);
+  });
+
+  luckBtn?.addEventListener("click", () => {
+    luckBtn.disabled = true;
+    luckBtn.textContent = "🎲 نرد الحظ (تم الاستخدام)";
+    document.getElementById("luck-sound").play();
+    const resultBox = document.getElementById("luck-result");
+    const outcomes = [
+      "🎯 نقاط مضاعفة",
+      "🚫 إلغاء الفرصة",
+      "💸 نصف النقاط",
+      "❌ خصم النقاط"
+    ];
+    const selected = outcomes[Math.floor(Math.random() * outcomes.length)];
+    resultBox.textContent = `نتيجة النرد: ${selected}`;
+    resultBox.style.display = "block";
+    resultBox.style.animation = "flash 0.5s ease-in-out infinite alternate";
+    setTimeout(() => {
+      resultBox.style.animation = "none";
+    }, 3000);
+    if (selected.includes("مضاعفة")) sessionStorage.setItem('luckEffect', 'double');
+    else if (selected.includes("نصف")) sessionStorage.setItem('luckEffect', 'half');
+    else if (selected.includes("خصم")) sessionStorage.setItem('luckEffect', 'minus');
+    else if (selected.includes("إلغاء")) sessionStorage.setItem('luckEffect', 'cancel');
   });
 </script>
+
 </body>
 </html>
-

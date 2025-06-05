@@ -106,6 +106,7 @@
     <div class="round-box">دور الفريق: <span id="team-number">1</span></div>
     <button id="steal-btn">🧨 هجوم</button>
   </div>
+<audio id="boom-sound" src="boom.mp3"></audio>
 
   <div class="score-section">
     <div>
@@ -200,6 +201,7 @@
 
     stealBtn.addEventListener("click", () => {
       if (sessionStorage.getItem(stealKey) === 'true') return;
+      document.getElementById("boom-sound").play(); // ✅ تشغيل صوت الهجوم
       sessionStorage.setItem(stealKey, 'true');
       sessionStorage.setItem('stealMode', 'true');
       alert("🧨 تم تفعيل الهجوم، سيتم خصم النقاط من الخصم إذا تمت الإجابة بشكل صحيح.");
