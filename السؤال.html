@@ -2,281 +2,199 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <title>عرض السؤال - ذكاء X سرعة</title>
+  <title>ذكاء × سرعة - السؤال</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
     body {
       font-family: 'Baloo 2', cursive;
       direction: rtl;
-      background: linear-gradient(135deg, #e6f7ff, #d0f0e0);
-      margin: 0;
-      padding: 0;
+      background: linear-gradient(to bottom right, #e0f7fa, #d0f5e8);
+      margin: 0; padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
     }
-    .question-container {
-      background: #ffffffdd;
-      padding: 30px 40px;
+    .container {
+      background: #ffffffcc;
+      padding: 30px;
       border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      box-shadow: 0 0 15px #999;
+      width: 90%;
       max-width: 800px;
-      width: 95%;
       text-align: center;
-      position: relative;
     }
-    .score-bar {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin-bottom: 20px;
-      font-size: 1.3em;
-      font-weight: bold;
-    }
-    .team-box {
-      background: #e0f7fa;
-      padding: 15px 25px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px #00968855;
-      color: #004d40;
-      min-width: 180px;
-    }
-    .team-box.active {
-      border: 3px solid #009688;
-      background-color: #c8fff8;
-    }
-    .team-name {
-      font-size: 1.3em;
-      font-weight: bold;
-    }
-    .team-score {
-      font-size: 1.1em;
-      margin-top: 5px;
-      color: #00796b;
-    }
-    .team-turn {
-      font-size: 1.6em;
-      font-weight: bold;
-      color: #00695c;
-      margin-bottom: 15px;
-    }
-    .category-title, .points {
-      font-size: 1.2em;
-      color: #004d40;
-      margin-bottom: 10px;
-    }
-    .points {
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #d35400;
-    }
-    .question-text {
-      font-size: 1.7em;
-      color: #222;
-      line-height: 1.6;
-      margin: 20px 0;
-    }
-    .timer {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 8px solid #0b8c8c;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2em;
-      font-weight: bold;
-      color: #0b8c8c;
-      margin: 0 auto 25px auto;
-      animation: pulseTimer 1.5s infinite;
-    }
-    @keyframes pulseTimer {
-      0% { box-shadow: 0 0 0px #0b8c8c; }
-      50% { box-shadow: 0 0 20px #0b8c8c99; }
-      100% { box-shadow: 0 0 0px #0b8c8c; }
-    }
-    .answer-text {
-      font-size: 2em;
-      color: #c0392b;
-      display: none;
-      font-weight: bold;
-    }
-    .button {
-      padding: 12px 24px;
-      margin: 10px;
+    .btn {
+      padding: 12px 25px;
+      margin: 5px;
       font-size: 1.1em;
       border: none;
       border-radius: 12px;
       cursor: pointer;
+    }
+    .btn-primary { background: #00796b; color: white; }
+    .btn-danger  { background: #c0392b; color: white; }
+    .btn-secondary { background: #2980b9; color: white; }
+    .btn-info { background: #16a085; color: white; }
+    .btn-warning { background: #f39c12; color: white; }
+    .help-buttons { margin: 15px 0; }
+    .team-turn, .points {
+      font-size: 1.3em;
+      color: #004d40;
       font-weight: bold;
-      transition: 0.3s;
     }
-    .button.show { background-color: #f39c12; color: white; }
-    .button.next { background-color: #2ecc71; color: white; }
-    .button:disabled { background-color: #ccc; color: #777; cursor: not-allowed; }
-    .judge-buttons, #team-select-container { display: none; margin-top: 20px; }
-    .judge-buttons button, .team-select button {
-      padding: 12px 30px;
-      font-size: 1.1em;
-      margin: 0 10px;
-      border-radius: 15px;
-      cursor: pointer;
-      font-weight: 700;
+    .question {
+      font-size: 1.6em;
+      margin: 20px 0;
+      color: #004d40;
     }
-    .judge-buttons .correct { background-color: #27ae60; color: white; }
-    .judge-buttons .wrong { background-color: #c0392b; color: white; }
-    .team-select button { background-color: #2980b9; color: white; }
+    #answer-box, #luck-result {
+      margin-top: 20px;
+      font-size: 1.4em;
+      color: #004d40;
+      display: none;
+    }
+    #audience-status {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #8e44ad;
+      display: none;
+    }
+    #audience-chart {
+      display: none;
+      margin-top: 20px;
+    }
+    #countdown {
+      margin-top: 10px;
+      font-size: 1.2em;
+      color: #c0392b;
+      font-weight: bold;
+    }
+    .bar {
+      height: 28px;
+      background-color: #16a085;
+      margin: 10px 0;
+      border-radius: 10px;
+      color: white;
+      padding-right: 10px;
+      font-weight: bold;
+      text-align: right;
+    }
+    .rolling {
+      animation: roll 0.6s infinite alternate;
+      color: #8e44ad;
+    }
+    @keyframes roll {
+      from { transform: scale(1); opacity: 0.6; }
+      to { transform: scale(1.2); opacity: 1; }
+    }
+    @keyframes flashText {
+      from { opacity: 0.5; }
+      to   { opacity: 1; transform: scale(1.05); }
+    }
   </style>
 </head>
 <body>
-<div class="question-container">
-  <div class="score-bar">
-    <div class="team-box" id="team1-box">
-      <div class="team-name" id="team1-name">فريق 1</div>
-      <div class="team-score" id="team1-score">0 نقطة</div>
+  <div class="container">
+    <div class="team-turn" id="team-turn"></div>
+    <div class="points" id="points"></div>
+
+    <div class="help-buttons">
+      <button class="btn btn-info" id="audience-btn">🎤 الجمهور</button>
+      <button class="btn btn-warning" id="luck-btn">🎲 نرد الحظ</button>
     </div>
-    <div class="team-box" id="team2-box">
-      <div class="team-name" id="team2-name">فريق 2</div>
-      <div class="team-score" id="team2-score">0 نقطة</div>
+
+    <div class="question" id="question-text">السؤال هنا</div>
+    <button class="btn btn-secondary" id="show-answer-btn">👁️ إظهار الجواب</button>
+    <div id="answer-box"></div>
+    <div id="luck-result"></div>
+    <audio id="crowd-sound" src="crowd.mp3"></audio>
+    <div id="audience-status">📊 جارٍ جمع آراء الجمهور...</div>
+    <div id="audience-chart"></div>
+    <div id="countdown"></div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn btn-primary" id="correct-btn">✅ إجابة صحيحة</button>
+      <button class="btn btn-danger" id="wrong-btn">❌ إجابة خاطئة</button>
     </div>
   </div>
-  <div class="team-turn" id="team-turn">دور الفريق</div>
-  <div class="category-title" id="category-title"></div>
-  <div class="points" id="points"></div>
-  <div class="question-text" id="question-text"></div>
-  <div class="timer" id="timer">90</div>
+<script>
+  const currentTeam = parseInt(sessionStorage.getItem("currentTeam")) || 1;
+  const points = parseInt(sessionStorage.getItem("currentPoints")) || 200;
+  const correctAnswer = sessionStorage.getItem("currentAnswer") || "...";
+  const question = sessionStorage.getItem("currentQuestion") || "...";
+  const team1 = sessionStorage.getItem("team1") || "فريق 1";
+  const team2 = sessionStorage.getItem("team2") || "فريق 2";
 
-  <button class="button show" id="show-answer-btn">إظهار الجواب</button>
-  <button class="button next" id="next-btn" disabled>التالي</button>
+  document.getElementById("team-turn").textContent = `دور الفريق: ${currentTeam === 1 ? team1 : team2}`;
+  document.getElementById("points").textContent = `النقاط: ${points}`;
+  document.getElementById("question-text").textContent = question;
 
-  <div class="answer-text" id="answer"></div>
+  document.getElementById("show-answer-btn").addEventListener("click", () => {
+    const box = document.getElementById("answer-box");
+    box.textContent = `الإجابة الصحيحة: ${correctAnswer}`;
+    box.style.display = "block";
+  });
 
-  <div class="judge-buttons" id="judge-buttons">
-    <button class="correct" id="correct-btn">صح</button>
-    <button class="wrong" id="wrong-btn">خطأ</button>
-  </div>
-
-  <div id="team-select-container" class="team-select">
-    <p>من الفريق الذي أجاب بشكل صحيح؟</p>
-    <button id="team1-btn"></button>
-    <button id="team2-btn"></button>
-  </div>
-
-  <div class="score-display" id="score-display"></div>
-
-  <audio id="click-sound" src="sounds/click.mp3" preload="auto"></audio>
-  <audio id="timer-sound" src="sounds/timer.mp3" preload="auto"></audio>
-  <audio id="correct-sound" src="sounds/correct.mp3" preload="auto"></audio>
-  <audio id="wrong-sound" src="sounds/wrong.mp3" preload="auto"></audio>
-  <audio id="answer-sound" src="sounds/answer.mp3" preload="auto"></audio>
-
-  <script>
-    const team1Name = sessionStorage.getItem('team1') || 'فريق 1';
-    const team2Name = sessionStorage.getItem('team2') || 'فريق 2';
-    const team1Score = parseInt(sessionStorage.getItem('team1Score')) || 0;
-    const team2Score = parseInt(sessionStorage.getItem('team2Score')) || 0;
-    const currentTeam = parseInt(sessionStorage.getItem('currentTeam')) || 1;
-
-    document.getElementById("team1-name").textContent = team1Name;
-    document.getElementById("team2-name").textContent = team2Name;
-    document.getElementById("team1-score").textContent = `${team1Score} نقطة`;
-    document.getElementById("team2-score").textContent = `${team2Score} نقطة`;
-    document.getElementById("team-turn").textContent = `دور الفريق: ${currentTeam === 1 ? team1Name : team2Name}`;
-
-    if (currentTeam === 1) {
-      document.getElementById("team1-box").classList.add("active");
-    } else {
-      document.getElementById("team2-box").classList.add("active");
+  // اسأل الجمهور
+  document.getElementById("audience-btn").addEventListener("click", () => {
+    const key = currentTeam === 1 ? "team1UsedAudience" : "team2UsedAudience";
+    if (sessionStorage.getItem(key) === "true") {
+      alert("❌ تم استخدام الجمهور مسبقاً");
+      return;
     }
+    sessionStorage.setItem(key, "true");
 
-    // إظهار السؤال والإجابة
-    const data = JSON.parse(sessionStorage.getItem('questionsDatabase'));
-    const category = sessionStorage.getItem('currentCategory');
-    const points = parseInt(sessionStorage.getItem('currentPoints'));
-    const index = parseInt(sessionStorage.getItem('currentIndex'));
+    const chart = document.getElementById("audience-chart");
+    const countdown = document.getElementById("countdown");
+    const status = document.getElementById("audience-status");
+    const audio = document.getElementById("crowd-sound");
 
-    const [questionText, answerText] = data[category]?.[points]?.[index] || ['سؤال غير متوفر', 'جواب غير متوفر'];
-    document.getElementById('question-text').textContent = questionText;
-    document.getElementById('answer').textContent = answerText;
-    document.getElementById('category-title').textContent = category;
-    document.getElementById('points').textContent = `${points} نقطة`;
+    chart.innerHTML = "";
+    chart.style.display = "none";
 
-    // تشغيل المؤقت
-    let timeLeft = 90;
-    const timerElement = document.getElementById("timer");
-    const timerSound = document.getElementById("timer-sound");
-    const timer = setInterval(() => {
-      timeLeft--;
-      timerElement.textContent = timeLeft;
-      if (timeLeft <= 5 && timeLeft > 0) timerSound.play().catch(() => {});
-      if (timeLeft <= 0) {
-        clearInterval(timer);
-        timerElement.textContent = "انتهى";
-        timerSound.play().catch(() => {});
-        timerElement.style.color = '#999';
+    status.style.display = "block";
+    status.style.animation = "flashText 0.5s ease-in-out infinite alternate";
+    audio.play();
+
+    setTimeout(() => {
+      status.style.display = "none";
+      status.style.animation = "none";
+      chart.style.display = "block";
+
+      const options = ["أ", "ب", "ج", "د"];
+      const correctIndex = Math.floor(Math.random() * 4);
+      const votes = [0, 0, 0, 0];
+      votes[correctIndex] = 55 + Math.floor(Math.random() * 16);
+      let remaining = 100 - votes[correctIndex];
+      const others = [0, 1, 2, 3].filter(i => i !== correctIndex);
+      for (let i = 0; i < others.length; i++) {
+        const share = i < others.length - 1 ? Math.floor(Math.random() * (remaining + 1)) : remaining;
+        votes[others[i]] = share;
+        remaining -= share;
       }
-    }, 1000);
 
-    // تشغيل الصوت والإجابات
-    const showAnswerBtn = document.getElementById("show-answer-btn");
-    const nextBtn = document.getElementById("next-btn");
-    const judgeButtons = document.getElementById("judge-buttons");
-    const scoreDisplay = document.getElementById("score-display");
-    const teamSelect = document.getElementById("team-select-container");
-    const team1Btn = document.getElementById("team1-btn");
-    const team2Btn = document.getElementById("team2-btn");
+      options.forEach((label, i) => {
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        bar.style.width = votes[i] + "%";
+        bar.textContent = `${label}: ${votes[i]}٪`;
+        chart.appendChild(bar);
+      });
 
-    team1Btn.textContent = team1Name;
-    team2Btn.textContent = team2Name;
-
-    const playSound = id => document.getElementById(id).play().catch(()=>{});
-
-    showAnswerBtn.addEventListener("click", () => {
-      document.getElementById('answer').style.display = "block";
-      playSound("answer-sound");
-      judgeButtons.style.display = "flex";
-      clearInterval(timer);
-    });
-
-    document.getElementById("correct-btn").addEventListener("click", () => {
-      playSound("correct-sound");
-      teamSelect.style.display = "block";
-      judgeButtons.style.display = "none";
-    });
-
-    team1Btn.addEventListener("click", () => {
-      const newScore = team1Score + points;
-      sessionStorage.setItem('team1Score', newScore);
-      scoreDisplay.textContent = `+${points} لـ ${team1Name} | مجموع: ${newScore}`;
-      teamSelect.style.display = "none";
-      nextBtn.disabled = false;
-    });
-
-    team2Btn.addEventListener("click", () => {
-      const newScore = team2Score + points;
-      sessionStorage.setItem('team2Score', newScore);
-      scoreDisplay.textContent = `+${points} لـ ${team2Name} | مجموع: ${newScore}`;
-      teamSelect.style.display = "none";
-      nextBtn.disabled = false;
-    });
-
-    document.getElementById("wrong-btn").addEventListener("click", () => {
-      playSound("wrong-sound");
-      scoreDisplay.textContent = `لم تُضف نقاط.`;
-      judgeButtons.style.display = "none";
-      nextBtn.disabled = false;
-    });
-
-    nextBtn.addEventListener("click", () => {
-      playSound("click-sound");
-      const used = JSON.parse(sessionStorage.getItem('usedQuestions') || '{}');
-      used[`${category}_${points}_${index}`] = true;
-      sessionStorage.setItem('usedQuestions', JSON.stringify(used));
-      sessionStorage.setItem('currentTeam', currentTeam === 1 ? '2' : '1');
-      window.location.href = "board.html";
-    });
+      let seconds = 10;
+      countdown.textContent = `⏳ ${seconds} ثانية...`;
+      const timer = setInterval(() => {
+        seconds--;
+        countdown.textContent = `⏳ ${seconds} ثانية...`;
+        if (seconds <= 0) {
+          clearInterval(timer);
+          chart.style.display = "none";
+          countdown.textContent = "";
+        }
+      }, 1000);
+    }, 2000);
+  });
 </script>
-</div>
 </body>
 </html>
+

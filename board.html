@@ -1,209 +1,210 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <title>ذكاء X سرعة - لوحة الأسئلة</title>
+  <meta charset="UTF-8">
+  <title>ذكاء × سرعة - اللوحة</title>
   <style>
     body {
+      margin: 0;
+      padding: 0;
       font-family: 'Baloo 2', cursive;
+      background-color: #dff7f9;
       direction: rtl;
-      background-color: #e0f7fa;
-      padding: 20px;
       text-align: center;
     }
-
     h1 {
-      font-size: 2.5em;
-      color: #00796b;
+      margin-top: 10px;
+      font-size: 2em;
+      color: #004d40;
+    }
+    .round-info {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
       margin-bottom: 10px;
     }
-
-    .team-turn {
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #004d40;
-      background: #d0f0e0;
-      border: 2px dashed #00796b;
+    .round-box {
       display: inline-block;
-      padding: 10px 20px;
-      border-radius: 15px;
-      margin-bottom: 25px;
-      box-shadow: 0 0 10px #00968844;
-    }
-
-    .teams-display {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 20px;
-      font-size: 1.2em;
+      padding: 5px 15px;
+      background-color: #e0f0ed;
+      border: 2px dashed #00897b;
+      border-radius: 12px;
       font-weight: bold;
+    }
+    #steal-btn {
+      background-color: #c0392b;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    #steal-btn.used {
+      background-color: #999 !important;
+      cursor: not-allowed;
+    }
+    .score-section {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 40px;
+      font-size: 1.2em;
+      margin-bottom: 10px;
       color: #004d40;
     }
-
-    .score {
-      display: block;
-      font-size: 1.4em;
-      color: #00796b;
-      margin-top: 5px;
-    }
-
     .board {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px 40px;
     }
-
-    .category {
-      background: #ffffffcc;
-      border-radius: 15px;
-      box-shadow: 0 0 10px #00968866;
-      padding: 15px;
-      width: 220px;
-      text-align: center;
+    .category-card {
+      background-color: white;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
-    .category-name {
+    .category-title {
       font-weight: bold;
-      font-size: 1.2em;
-      color: #004d40;
-      margin-bottom: 10px;
+      font-size: 1.1em;
+      margin-bottom: 5px;
     }
-
-    .remaining-count {
+    .question-count {
       font-size: 0.9em;
-      color: #555;
       margin-bottom: 10px;
+      color: #777;
     }
-
-    .points {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+    .cell-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
     }
-
-    .point-box {
-      background: linear-gradient(145deg, #009688, #00796b);
+    .cell {
+      background: #00796b;
       color: white;
-      font-weight: bold;
-      padding: 12px;
-      width: 60px;
-      text-align: center;
-      border-radius: 10px;
-      box-shadow: 0 0 6px #004d40;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 1.1em;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: background 0.3s;
     }
-
-    .point-box:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 12px #004d40cc;
+    .cell:hover {
+      background: #004d40;
     }
-
-    .used {
-      background: #cccccc !important;
-      color: #666 !important;
-      cursor: default !important;
-      box-shadow: none !important;
+    .cell.used {
+      background: #b0bec5;
       pointer-events: none;
+      cursor: default;
     }
   </style>
 </head>
 <body>
 
-  <h1>ذكاء X سرعة</h1>
+  <h1>ذكاء × سرعة</h1>
+  <div class="round-info">
+    <div class="round-box">دور الفريق: <span id="team-number">1</span></div>
+    <button id="steal-btn">🧨 هجوم</button>
+  </div>
 
-  <div class="team-turn" id="current-team-name">دور الفريق</div>
-
-  <div class="teams-display">
+  <div class="score-section">
     <div>
-      <span id="team1-name">فريق 1</span>
-      <span class="score" id="team1-score">0</span>
+      <div id="team1-name">22</div>
+      <div id="team1-score">0</div>
     </div>
     <div>
-      <span id="team2-name">فريق 2</span>
-      <span class="score" id="team2-score">0</span>
+      <div id="team2-name">11</div>
+      <div id="team2-score">0</div>
     </div>
   </div>
 
-  <div class="board" id="categories-board"></div>
-
-  <audio id="click-sound" src="click.mp3"></audio>
+  <div class="board" id="board"></div>
 
   <script>
-    const clickSound = document.getElementById("click-sound");
-
-    const team1Name = sessionStorage.getItem('team1') || 'فريق 1';
-    const team2Name = sessionStorage.getItem('team2') || 'فريق 2';
-    const team1Score = parseInt(sessionStorage.getItem('team1Score')) || 0;
-    const team2Score = parseInt(sessionStorage.getItem('team2Score')) || 0;
-    const currentTeam = parseInt(sessionStorage.getItem('currentTeam')) || 1;
-
-    document.getElementById('team1-name').textContent = team1Name;
-    document.getElementById('team2-name').textContent = team2Name;
-    document.getElementById('team1-score').textContent = team1Score;
-    document.getElementById('team2-score').textContent = team2Score;
-    document.getElementById('current-team-name').textContent = `دور الفريق: ${currentTeam === 1 ? team1Name : team2Name}`;
-
-    const categories = JSON.parse(sessionStorage.getItem('categories')) || [];
-    const board = document.getElementById('categories-board');
-    const usedQuestions = JSON.parse(sessionStorage.getItem('usedQuestions') || '{}');
-
+    const categories = JSON.parse(sessionStorage.getItem("categories") || "[]");
+    const questionsDB = JSON.parse(sessionStorage.getItem("questionsDatabase") || "{}");
+    const usedQuestions = JSON.parse(sessionStorage.getItem("usedQuestions") || "{}");
     const levels = [200, 400, 600];
-    const maxPerLevel = 2;
+    const board = document.getElementById("board");
 
-    categories.forEach(category => {
-      let remainingCount = 0;
+    categories.forEach(cat => {
+      const card = document.createElement("div");
+      card.className = "category-card";
 
-      levels.forEach(points => {
-        for (let i = 0; i < maxPerLevel; i++) {
-          const key = `${category}_${points}_${i}`;
-          if (!usedQuestions[key]) remainingCount++;
-        }
-      });
+      const title = document.createElement("div");
+      title.className = "category-title";
+      title.textContent = cat;
+      card.appendChild(title);
 
-      const categoryDiv = document.createElement('div');
-      categoryDiv.className = 'category';
+      const info = document.createElement("div");
+      info.className = "question-count";
+      info.textContent = "عددها: 6 سؤال";
+      card.appendChild(info);
 
-      const nameDiv = document.createElement('div');
-      nameDiv.className = 'category-name';
-      nameDiv.textContent = category;
-      categoryDiv.appendChild(nameDiv);
-
-      const countDiv = document.createElement('div');
-      countDiv.className = 'remaining-count';
-      countDiv.textContent = `المتبقي: ${remainingCount} سؤال`;
-      categoryDiv.appendChild(countDiv);
-
-      const pointsDiv = document.createElement('div');
-      pointsDiv.className = 'points';
+      const cellContainer = document.createElement("div");
+      cellContainer.className = "cell-container";
 
       levels.forEach(points => {
-        for (let i = 0; i < maxPerLevel; i++) {
-          const pointBox = document.createElement('div');
-          pointBox.className = 'point-box';
-          pointBox.textContent = points;
+        for (let i = 0; i < 2; i++) {
+          const key = `${cat}_${points}_${i}`;
+          const questionData = questionsDB[cat]?.[points]?.[i];
 
-          const key = `${category}_${points}_${i}`;
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.textContent = points;
+
           if (usedQuestions[key]) {
-            pointBox.classList.add("used");
-          } else {
-            pointBox.addEventListener("click", () => {
-              clickSound.play();
-              sessionStorage.setItem('currentCategory', category);
-              sessionStorage.setItem('currentPoints', points);
-              sessionStorage.setItem('currentIndex', i);
-              window.location.href = 'السؤال.html';
-            });
+            cell.classList.add("used");
           }
 
-          pointsDiv.appendChild(pointBox);
+          cell.addEventListener("click", () => {
+            if (!questionData) return alert("❌ لا يوجد سؤال.");
+
+            sessionStorage.setItem("currentCategory", cat);
+            sessionStorage.setItem("currentPoints", points);
+            sessionStorage.setItem("currentIndex", i);
+            sessionStorage.setItem("currentQuestion", questionData[0]);
+            sessionStorage.setItem("currentAnswer", questionData[1]);
+            usedQuestions[key] = true;
+            sessionStorage.setItem("usedQuestions", JSON.stringify(usedQuestions));
+
+            window.location.href = "السؤال.html";
+          });
+
+          cellContainer.appendChild(cell);
         }
       });
 
-      categoryDiv.appendChild(pointsDiv);
-      board.appendChild(categoryDiv);
+      card.appendChild(cellContainer);
+      board.appendChild(card);
+    });
+
+    const team1 = sessionStorage.getItem("team1") || "22";
+    const team2 = sessionStorage.getItem("team2") || "11";
+    const score1 = sessionStorage.getItem("score1") || "0";
+    const score2 = sessionStorage.getItem("score2") || "0";
+    const currentTeam = parseInt(sessionStorage.getItem("currentTeam")) || 1;
+
+    document.getElementById("team1-name").textContent = team1;
+    document.getElementById("team1-score").textContent = score1;
+    document.getElementById("team2-name").textContent = team2;
+    document.getElementById("team2-score").textContent = score2;
+    document.getElementById("team-number").textContent = currentTeam;
+
+    const stealBtn = document.getElementById("steal-btn");
+    const stealKey = currentTeam === 1 ? 'team1UsedSteal' : 'team2UsedSteal';
+    if (sessionStorage.getItem(stealKey) === 'true') {
+      stealBtn.classList.add("used");
+      stealBtn.disabled = true;
+    }
+
+    stealBtn.addEventListener("click", () => {
+      if (sessionStorage.getItem(stealKey) === 'true') return;
+      sessionStorage.setItem(stealKey, 'true');
+      sessionStorage.setItem('stealMode', 'true');
+      alert("🧨 تم تفعيل الهجوم، سيتم خصم النقاط من الخصم إذا تمت الإجابة بشكل صحيح.");
+      stealBtn.classList.add("used");
+      stealBtn.disabled = true;
     });
   </script>
 

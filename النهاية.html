@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -43,7 +44,7 @@
     }
 
     button {
-      margin-top: 20px;
+      margin-top: 15px;
       padding: 15px 30px;
       font-size: 1.2em;
       background-color: #c0392b;
@@ -51,26 +52,32 @@
       border: none;
       border-radius: 15px;
       cursor: pointer;
+      transition: background 0.3s;
     }
 
-    button:hover {
+    button:hover:not(.disabled) {
       background-color: #a83226;
+    }
+
+    button.disabled {
+      background-color: #999 !important;
+      cursor: not-allowed;
     }
   </style>
 </head>
 <body>
 
-  <h1>نهاية اللعبة 🎉</h1>
+  <h1>🎉 نهاية اللعبة 🎉</h1>
 
   <div class="score-box" id="team1-score"></div>
   <div class="score-box" id="team2-score"></div>
 
   <div class="winner" id="winner-text"></div>
 
-  <button onclick="resetFromZero()">إعادة اللعبة من البداية 🔄</button>
-  <button onclick="resetButKeepUsed()">إعادة لعب جديدة بدون تكرار الأسئلة 🔁</button>
+  <button id="reset-all" onclick="resetFromZero()">إعادة اللعبة من البداية 🔄</button>
+  <button id="reset-keep" onclick="resetButKeepUsed()">إعادة لعب جديدة بدون تكرار 🔁</button>
 
-  <audio id="click-sound" src="click.mp3"></audio>
+  <audio id="click-sound" src="click.mp3" preload="auto"></audio>
 
   <script>
     const clickSound = document.getElementById("click-sound");
@@ -85,30 +92,37 @@
 
     const winnerText = document.getElementById("winner-text");
     if (score1 > score2) {
-      winnerText.textContent = `الفائز هو: ${team1} 🏆`;
+      winnerText.textContent = `🏆 الفائز هو: ${team1}`;
     } else if (score2 > score1) {
-      winnerText.textContent = `الفائز هو: ${team2} 🏆`;
+      winnerText.textContent = `🏆 الفائز هو: ${team2}`;
     } else {
-      winnerText.textContent = "تعادل! 🎯";
+      winnerText.textContent = "🎯 تعادل!";
+    }
+
+    function disableButtons() {
+      document.getElementById("reset-all").classList.add("disabled");
+      document.getElementById("reset-all").disabled = true;
+      document.getElementById("reset-keep").classList.add("disabled");
+      document.getElementById("reset-keep").disabled = true;
     }
 
     function resetFromZero() {
       clickSound.play();
+      disableButtons();
       sessionStorage.clear();
       setTimeout(() => {
-        window.location.href = "الواجهة الرئيسية.html";
+        window.location.href = "index.html";
       }, 300);
     }
 
     function resetButKeepUsed() {
       clickSound.play();
-
+      disableButtons();
       const used = sessionStorage.getItem("usedQuestions");
       sessionStorage.clear();
       sessionStorage.setItem("usedQuestions", used);
-
       setTimeout(() => {
-        window.location.href = "الواجهة الرئيسية.html";
+        window.location.href = "index.html";
       }, 300);
     }
   </script>

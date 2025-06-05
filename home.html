@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <title>ذكاء X سرعة</title>
+  <title>ذكاء X سرعة - اختيار الفئات</title>
   <style>
     body {
       font-family: 'Baloo 2', cursive;
@@ -10,6 +11,26 @@
       background: linear-gradient(to bottom right, #a0e9ff, #b8f2d9);
       padding: 40px;
       text-align: center;
+      margin: 0;
+    }
+
+    input[type="text"] {
+      padding: 12px;
+      font-size: 1em;
+      margin: 10px;
+      border-radius: 10px;
+      border: 2px solid #09a09a;
+      width: 200px;
+    }
+
+    h1 {
+      color: #064d4d;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin-top: 30px;
+      color: #064d4d;
     }
 
     .category-group {
@@ -49,14 +70,6 @@
       opacity: 0.6;
     }
 
-    input[type="text"] {
-      padding: 10px;
-      font-size: 1em;
-      margin: 10px;
-      border-radius: 10px;
-      border: 2px solid #09a09a;
-    }
-
     button {
       padding: 15px 30px;
       font-size: 1.2em;
@@ -65,19 +78,23 @@
       border-radius: 15px;
       cursor: pointer;
       color: white;
+      transition: background 0.3s;
     }
 
     #start-btn {
       background-color: #064d4d;
     }
 
+    #start-btn:hover {
+      background-color: #042f2f;
+    }
+
     #reset-btn {
       background-color: #c0392b;
     }
 
-    h2 {
-      margin-top: 30px;
-      color: #064d4d;
+    #reset-btn:hover {
+      background-color: #a32e21;
     }
   </style>
 </head>
@@ -88,13 +105,13 @@
   <input type="text" id="team1-name" placeholder="اسم الفريق 1" />
   <input type="text" id="team2-name" placeholder="اسم الفريق 2" />
 
-  <h2>اختر حتى 6 فئات (المتاحة فقط)</h2>
+  <h2>اختر حتى 6 فئات</h2>
   <div id="categories-container"></div>
 
   <button id="start-btn">بدء لعبة جديدة</button>
   <button id="reset-btn">إعادة اللعبة من الصفر</button>
 
-  <audio id="click-sound" src="click.mp3"></audio>
+  <audio id="click-sound" src="click.mp3" preload="auto"></audio>
 
   <script>
     const clickSound = document.getElementById("click-sound");
@@ -157,7 +174,7 @@
                   box.classList.add("selected");
                   selectedCategories.push(cat);
                 } else {
-                  alert("يمكنك اختيار 6 فئات فقط");
+                  alert("❗ يمكنك اختيار 6 فئات فقط.");
                 }
               }
             });
@@ -176,12 +193,12 @@
       const name2 = document.getElementById("team2-name").value.trim();
 
       if (!name1 || !name2) {
-        alert("يرجى إدخال أسماء الفريقين");
+        alert("❗ يرجى إدخال أسماء الفريقين.");
         return;
       }
 
       if (selectedCategories.length !== 6) {
-        alert("يرجى اختيار 6 فئات فقط");
+        alert("❗ يرجى اختيار 6 فئات فقط.");
         return;
       }
 
@@ -197,14 +214,13 @@
 
     document.getElementById("reset-btn").addEventListener("click", () => {
       clickSound.play();
-      if (confirm("هل أنت متأكد أنك تريد إعادة اللعبة من الصفر؟ سيتم مسح جميع الأسئلة المستخدمة!")) {
+      if (confirm("⚠️ هل أنت متأكد من إعادة اللعبة من الصفر؟ سيتم مسح جميع الأسئلة المستخدمة!")) {
         sessionStorage.clear();
-        alert("تمت إعادة التهيئة. يمكنك الآن اختيار فئات جديدة.");
+        alert("✅ تمت إعادة التهيئة. يمكنك الآن اختيار فئات جديدة.");
         location.reload();
       }
     });
 
-    // تحميل الأسئلة
     fetch("questions.json")
       .then(res => res.json())
       .then(data => {
@@ -213,7 +229,7 @@
         renderCategories();
       })
       .catch(err => {
-        alert("تعذر تحميل الأسئلة");
+        alert("❌ تعذر تحميل الأسئلة");
         console.error(err);
       });
   </script>
