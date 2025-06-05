@@ -1,135 +1,47 @@
+<div style="text-align: center; font-family: 'Tajawal', sans-serif; padding: 40px;">
+  <h1 id="title" style="font-size: 2.5em; color: #2c3e50;">🏆 الفائز هو...</h1>
+  <button id="show-winner-btn" style="font-size: 1.2em; padding: 12px 24px; margin-top: 20px; border: none; border-radius: 10px; background-color: #27ae60; color: white; cursor: pointer;">🎉 إظهار النتيجة</button>
+  <div id="winner-section" style="display:none; margin-top: 30px;">
+    <h2 id="winner-text" style="font-size: 2em; color: #2980b9;">🎊 الفريق الفائز: سيتم تحديده تلقائيًا</h2>
+    <audio id="ending-sound" src="ending-audio.mp3"></audio>
+    <video id="ending-video" width="640" controls>
+      <source src="ending.mp4" type="video/mp4">
+      المتصفح لا يدعم عرض الفيديو.
+    </video>
 
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-  <meta charset="UTF-8" />
-  <title>نهاية اللعبة - ذكاء X سرعة</title>
-  <style>
-    body {
-      font-family: 'Baloo 2', cursive;
-      direction: rtl;
-      background: linear-gradient(to bottom right, #c2f0f0, #d0f5e8);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      text-align: center;
-      margin: 0;
-    }
+    <!-- أزرار إضافية -->
+    <div style="margin-top: 30px;">
+      <button onclick="window.location.href='board.html'" style="padding: 10px 20px; margin: 10px; border-radius: 10px; background-color: #3498db; color: white; font-size: 1em;">🔁 العب جولة جديدة</button>
+      <button onclick="sessionStorage.clear(); window.location.href='index.html'" style="padding: 10px 20px; margin: 10px; border-radius: 10px; background-color: #e74c3c; color: white; font-size: 1em;">🏠 العودة للرئيسية</button>
+    </div>
+  </div>
+</div>
 
-    h1 {
-      font-size: 3em;
-      color: #0b8c8c;
-      margin-bottom: 20px;
-    }
-
-    .score-box {
-      background: #ffffffcc;
-      padding: 20px 30px;
-      margin: 15px;
-      border-radius: 20px;
-      box-shadow: 0 0 10px #0b8c8c66;
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #064d4d;
-      width: 300px;
-    }
-
-    .winner {
-      margin-top: 30px;
-      font-size: 2em;
-      font-weight: bold;
-      color: #27ae60;
-    }
-
-    button {
-      margin-top: 15px;
-      padding: 15px 30px;
-      font-size: 1.2em;
-      background-color: #c0392b;
-      color: white;
-      border: none;
-      border-radius: 15px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    button:hover:not(.disabled) {
-      background-color: #a83226;
-    }
-
-    button.disabled {
-      background-color: #999 !important;
-      cursor: not-allowed;
-    }
-  </style>
-</head>
-<body>
-
-  <h1>🎉 نهاية اللعبة 🎉</h1>
-
-  <div class="score-box" id="team1-score"></div>
-  <div class="score-box" id="team2-score"></div>
-
-  <div class="winner" id="winner-text"></div>
-<video id="ending-video" width="640" controls autoplay>
-  <source src="ending.mp4" type="video/mp4">
-  المتصفح لا يدعم عرض الفيديو.
-</video>
-
-  <button id="reset-all" onclick="resetFromZero()">إعادة اللعبة من البداية 🔄</button>
-  <button id="reset-keep" onclick="resetButKeepUsed()">إعادة لعب جديدة بدون تكرار 🔁</button>
-
-  <audio id="click-sound" src="click.mp3" preload="auto"></audio>
-
-  <script>
-    const clickSound = document.getElementById("click-sound");
+<script>
+  document.getElementById("show-winner-btn").addEventListener("click", () => {
+    document.getElementById("winner-section").style.display = "block";
+    document.getElementById("show-winner-btn").style.display = "none";
 
     const team1 = sessionStorage.getItem("team1") || "فريق 1";
     const team2 = sessionStorage.getItem("team2") || "فريق 2";
     const score1 = parseInt(sessionStorage.getItem("team1Score")) || 0;
     const score2 = parseInt(sessionStorage.getItem("team2Score")) || 0;
 
-    document.getElementById("team1-score").textContent = `${team1}: ${score1} نقطة`;
-    document.getElementById("team2-score").textContent = `${team2}: ${score2} نقطة`;
-
-    const winnerText = document.getElementById("winner-text");
+    let winnerText = "🤝 تعادل بين الفريقين!";
     if (score1 > score2) {
-      winnerText.textContent = `🏆 الفائز هو: ${team1}`;
+      winnerText = `🎊 ${team1} هو الفائز بـ ${score1} نقطة!`;
     } else if (score2 > score1) {
-      winnerText.textContent = `🏆 الفائز هو: ${team2}`;
-    } else {
-      winnerText.textContent = "🎯 تعادل!";
+      winnerText = `🎊 ${team2} هو الفائز بـ ${score2} نقطة!`;
     }
+    document.getElementById("winner-text").textContent = winnerText;
 
-    function disableButtons() {
-      document.getElementById("reset-all").classList.add("disabled");
-      document.getElementById("reset-all").disabled = true;
-      document.getElementById("reset-keep").classList.add("disabled");
-      document.getElementById("reset-keep").disabled = true;
-    }
-
-    function resetFromZero() {
-      clickSound.play();
-      disableButtons();
-      sessionStorage.clear();
-      setTimeout(() => {
-        window.location.href = "index.html";
-      }, 300);
-    }
-
-    function resetButKeepUsed() {
-      clickSound.play();
-      disableButtons();
-      const used = sessionStorage.getItem("usedQuestions");
-      sessionStorage.clear();
-      sessionStorage.setItem("usedQuestions", used);
-      setTimeout(() => {
-        window.location.href = "index.html";
-      }, 300);
-    }
-  </script>
-
-</body>
-</html>
+    const sound = document.getElementById("ending-sound");
+    const video = document.getElementById("ending-video");
+    try {
+      sound.play();
+    } catch (e) {}
+    try {
+      video.play();
+    } catch (e) {}
+  });
+</script>
