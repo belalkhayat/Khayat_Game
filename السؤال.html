@@ -204,52 +204,90 @@
       window.location.href = "board.html";
     });
   </script>
-  <script>
+ <script>
   const audienceBtn = document.getElementById("audience-btn");
   const luckBtn = document.getElementById("luck-btn");
 
-  audienceBtn?.addEventListener("click", () => {
+  audienceBtn?.addEventListener("click", async () => {
     audienceBtn.disabled = true;
     audienceBtn.textContent = "🎤 الجمهور (تم الاستخدام)";
     document.getElementById("crowd-sound").play();
+
     const chart = document.getElementById("audience-chart");
     const countdown = document.getElementById("countdown");
     chart.innerHTML = "";
     chart.style.display = "block";
 
-    const options = ["أ", "ب", "ج", "د"];
-    const correctIndex = Math.floor(Math.random() * 4);
-    const votes = [0, 0, 0, 0];
-    votes[correctIndex] = 55 + Math.floor(Math.random() * 16);
-    let remaining = 100 - votes[correctIndex];
-    const others = [0, 1, 2, 3].filter(i => i !== correctIndex);
-    for (let i = 0; i < others.length; i++) {
-      const share = i < others.length - 1 ? Math.floor(Math.random() * (remaining + 1)) : remaining;
-      votes[others[i]] = share;
-      remaining -= share;
-    }
+    const questionText = sessionStorage.getItem("currentQuestion") || "...";
 
-    options.forEach((label, i) => {
-      const bar = document.createElement("div");
-      bar.className = "bar";
-      bar.style.width = votes[i] + "%";
-      bar.textContent = `${label}: ${votes[i]}٪`;
-      chart.appendChild(bar);
-    });
+    try {
+      const res = await fetch("questions.json");
+      const data = await res.json(); // [["سؤال", "إجابة"], ...]
 
-    let seconds = 10;
-    countdown.textContent = `⏳ ${seconds} ثانية...`;
-    countdown.style.display = "block";
-    const timer = setInterval(() => {
-      seconds--;
-      countdown.textContent = `⏳ ${seconds} ثانية...`;
-      if (seconds <= 0) {
-        clearInterval(timer);
-        chart.style.display = "none";
-        countdown.style.display = "none";
+      // البحث عن السؤال من الشكل ["السؤال", "الإجابة"]
+      const found = data.find(q => q[0].trim() === questionText.trim());
+      if (!found) throw new Error("السؤال غير موجود في questions.json");
+
+      const correctAnswer = found[1].trim();
+
+      // جمع كل الإجابات الممكنة (باستثناء الصحيحة) لاستخدامها كخيارات
+      const otherAnswers = data
+        .map(q => q[1].trim())
+        .filter(ans => ans !== correctAnswer);
+
+      // أخذ 3 خيارات عشوائية
+      const randomWrong = otherAnswers.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+      // إنشاء الخيارات الأربعة (صحيحة + 3 خاطئة)
+      const allOptions = [...randomWrong, correctAnswer].sort(() => 0.5 - Math.random());
+
+      // توزيع الأصوات
+      const votes = {};
+      const correctIndex = allOptions.indexOf(correctAnswer);
+      const correctPercent = 55 + Math.floor(Math.random() * 16); // 55 - 70%
+      votes[correctIndex] = correctPercent;
+
+      let remaining = 100 - correctPercent;
+      for (let i = 0; i < 4; i++) {
+        if (i !== correctIndex) {
+          let value = (i < 3) ? Math.floor(Math.random() * (remaining + 1)) : remaining;
+          votes[i] = value;
+          remaining -= value;
+        }
       }
-    }, 1000);
+
+      // عرض النتائج على شكل أعمدة
+      allOptions.forEach((opt, i) => {
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        bar.style.width = votes[i] + "%";
+        bar.textContent = `${opt}: ${votes[i]}٪`;
+        chart.appendChild(bar);
+      });
+
+      // العداد التنازلي
+      let seconds = 15;
+      countdown.textContent = `⏳ ${seconds} ثانية...`;
+      countdown.style.display = "block";
+      const timer = setInterval(() => {
+        seconds--;
+        countdown.textContent = `⏳ ${seconds} ثانية...`;
+        if (seconds <= 0) {
+          clearInterval(timer);
+          chart.style.display = "none";
+          countdown.style.display = "none";
+        }
+      }, 1000);
+
+    } catch (error) {
+      alert("حدث خطأ أثناء تحميل سؤال الجمهور");
+      console.error(error);
+    }
   });
+</script>
+
+
+
 
   luckBtn?.addEventListener("click", () => {
     luckBtn.disabled = true;
