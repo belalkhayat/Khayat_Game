@@ -1,0 +1,123 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Baloo 2', cursive;
+  background-color: #dff7f9;
+  direction: rtl;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 10px;
+  font-size: 2em;
+  color: #004d40;
+}
+
+.round-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.round-box {
+  display: inline-block;
+  padding: 5px 15px;
+  background-color: #e0f0ed;
+  border: 2px dashed #00897b;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+#steal-btn {
+  background-color: #c0392b;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+#steal-btn.used {
+  background-color: #999 !important;
+  cursor: not-allowed;
+}
+
+.score-section {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 40px;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: #004d40;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 20px 40px;
+}
+
+.category-card {
+  background-color: white;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.category-title {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}
+
+.question-count {
+  font-size: 0.9em;
+  margin-bottom: 10px;
+  color: #777;
+}
+
+.cell-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.cell {
+  background: #00796b;
+  color: white;
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+#results-btn {
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 1.1em;
+  background-color: #009688;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#results-btn:hover {
+  background-color: #00796b;
+}
+
+
+.cell:hover {
+  background: #004d40;
+}
+
+.cell.used {
+  background: #b0bec5;
+  pointer-events: none;
+  cursor: default;
+}

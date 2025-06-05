@@ -3,212 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <title>ذكاء × سرعة - اللوحة</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Baloo 2', cursive;
-      background-color: #dff7f9;
-      direction: rtl;
-      text-align: center;
-    }
-    h1 {
-      margin-top: 10px;
-      font-size: 2em;
-      color: #004d40;
-    }
-    .round-info {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .round-box {
-      display: inline-block;
-      padding: 5px 15px;
-      background-color: #e0f0ed;
-      border: 2px dashed #00897b;
-      border-radius: 12px;
-      font-weight: bold;
-    }
-    #steal-btn {
-      background-color: #c0392b;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-size: 1em;
-    }
-    #steal-btn.used {
-      background-color: #999 !important;
-      cursor: not-allowed;
-    }
-    .score-section {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 40px;
-      font-size: 1.2em;
-      margin-bottom: 10px;
-      color: #004d40;
-    }
-    .board {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      padding: 20px 40px;
-    }
-    .category-card {
-      background-color: white;
-      border-radius: 16px;
-      padding: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .category-title {
-      font-weight: bold;
-      font-size: 1.1em;
-      margin-bottom: 5px;
-    }
-    .question-count {
-      font-size: 0.9em;
-      margin-bottom: 10px;
-      color: #777;
-    }
-    .cell-container {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    .cell {
-      background: #00796b;
-      color: white;
-      padding: 10px;
-      border-radius: 12px;
-      font-size: 1.1em;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .cell:hover {
-      background: #004d40;
-    }
-    .cell.used {
-      background: #b0bec5;
-      pointer-events: none;
-      cursor: default;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style-board.css">
 </head>
 <body>
-
   <h1>ذكاء × سرعة</h1>
+
   <div class="round-info">
     <div class="round-box">دور الفريق: <span id="team-number">1</span></div>
     <button id="steal-btn">🧨 هجوم</button>
   </div>
-<audio id="boom-sound" src="boom.mp3"></audio>
+
+  <audio id="boom-sound" src="boom.mp3"></audio>
 
   <div class="score-section">
     <div>
-      <div id="team1-name">22</div>
-      <div id="team1-score">0</div>
+      <div id="team1-name"></div>
+      <div id="team1-score"></div>
     </div>
     <div>
-      <div id="team2-name">11</div>
-      <div id="team2-score">0</div>
+      <div id="team2-name"></div>
+      <div id="team2-score"></div>
     </div>
   </div>
 
   <div class="board" id="board"></div>
+  <button id="results-btn">عرض النتائج النهائية 🏁</button>
 
-  <script>
-    const categories = JSON.parse(sessionStorage.getItem("categories") || "[]");
-    const questionsDB = JSON.parse(sessionStorage.getItem("questionsDatabase") || "{}");
-    const usedQuestions = JSON.parse(sessionStorage.getItem("usedQuestions") || "{}");
-    const levels = [200, 400, 600];
-    const board = document.getElementById("board");
 
-    categories.forEach(cat => {
-      const card = document.createElement("div");
-      card.className = "category-card";
-
-      const title = document.createElement("div");
-      title.className = "category-title";
-      title.textContent = cat;
-      card.appendChild(title);
-
-      const info = document.createElement("div");
-      info.className = "question-count";
-      info.textContent = "عددها: 6 سؤال";
-      card.appendChild(info);
-
-      const cellContainer = document.createElement("div");
-      cellContainer.className = "cell-container";
-
-      levels.forEach(points => {
-        for (let i = 0; i < 2; i++) {
-          const key = `${cat}_${points}_${i}`;
-          const questionData = questionsDB[cat]?.[points]?.[i];
-
-          const cell = document.createElement("div");
-          cell.className = "cell";
-          cell.textContent = points;
-
-          if (usedQuestions[key]) {
-            cell.classList.add("used");
-          }
-
-          cell.addEventListener("click", () => {
-            if (!questionData) return alert("❌ لا يوجد سؤال.");
-
-            sessionStorage.setItem("currentCategory", cat);
-            sessionStorage.setItem("currentPoints", points);
-            sessionStorage.setItem("currentIndex", i);
-            sessionStorage.setItem("currentQuestion", questionData[0]);
-            sessionStorage.setItem("currentAnswer", questionData[1]);
-            usedQuestions[key] = true;
-            sessionStorage.setItem("usedQuestions", JSON.stringify(usedQuestions));
-
-            window.location.href = "السؤال.html";
-          });
-
-          cellContainer.appendChild(cell);
-        }
-      });
-
-      card.appendChild(cellContainer);
-      board.appendChild(card);
-    });
-
-    const team1 = sessionStorage.getItem("team1") || "22";
-    const team2 = sessionStorage.getItem("team2") || "11";
-    const score1 = sessionStorage.getItem("score1") || "0";
-    const score2 = sessionStorage.getItem("score2") || "0";
-    const currentTeam = parseInt(sessionStorage.getItem("currentTeam")) || 1;
-
-    document.getElementById("team1-name").textContent = team1;
-    document.getElementById("team1-score").textContent = score1;
-    document.getElementById("team2-name").textContent = team2;
-    document.getElementById("team2-score").textContent = score2;
-    document.getElementById("team-number").textContent = currentTeam;
-
-    const stealBtn = document.getElementById("steal-btn");
-    const stealKey = currentTeam === 1 ? 'team1UsedSteal' : 'team2UsedSteal';
-    if (sessionStorage.getItem(stealKey) === 'true') {
-      stealBtn.classList.add("used");
-      stealBtn.disabled = true;
-    }
-
-    stealBtn.addEventListener("click", () => {
-      if (sessionStorage.getItem(stealKey) === 'true') return;
-      document.getElementById("boom-sound").play(); // ✅ تشغيل صوت الهجوم
-      sessionStorage.setItem(stealKey, 'true');
-      sessionStorage.setItem('stealMode', 'true');
-      alert("🧨 تم تفعيل الهجوم، سيتم خصم النقاط من الخصم إذا تمت الإجابة بشكل صحيح.");
-      stealBtn.classList.add("used");
-      stealBtn.disabled = true;
-    });
-  </script>
-
+  <script src="board-logic.js"></script>
 </body>
 </html>

@@ -1,0 +1,122 @@
+body {
+  font-family: 'Baloo 2', cursive;
+  direction: rtl;
+  background: linear-gradient(to bottom right, #e0f7fa, #d0f5e8);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  background: #ffffffcc;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 0 15px #999;
+  width: 90%;
+  max-width: 800px;
+  text-align: center;
+}
+
+.btn {
+  padding: 12px 25px;
+  margin: 5px;
+  font-size: 1.1em;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #00796b;
+  color: white;
+}
+
+.btn-danger {
+  background: #c0392b;
+  color: white;
+}
+
+.btn-secondary {
+  background: #2980b9;
+  color: white;
+}
+
+.btn-info {
+  background: #16a085;
+  color: white;
+}
+
+.btn-warning {
+  background: #f39c12;
+  color: white;
+}
+
+.team-turn,
+.points {
+  font-size: 1.3em;
+  color: #004d40;
+  font-weight: bold;
+}
+
+.question {
+  font-size: 1.6em;
+  margin: 20px 0;
+  color: #004d40;
+}
+
+#answer-box,
+#luck-result {
+  margin-top: 20px;
+  font-size: 1.4em;
+  color: #004d40;
+  display: none;
+}
+
+.bar {
+  height: 28px;
+  background-color: #16a085;
+  margin: 10px 0;
+  border-radius: 10px;
+  color: white;
+  padding-right: 10px;
+  font-weight: bold;
+  text-align: right;
+  transition: width 0.5s ease-in-out;
+}
+
+#audience-chart,
+#countdown {
+  display: none;
+  margin-top: 20px;
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #8e44ad;
+}
+
+/* تأثير الإجابة الصحيحة والخاطئة */
+.shake {
+  animation: shake 0.4s ease-in-out;
+  background-color: #f8d7da !important;
+}
+
+.flash-success {
+  animation: flashGreen 0.6s ease-in-out;
+  background-color: #d4edda !important;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-8px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes flashGreen {
+  0% { opacity: 0.8; }
+  50% { background-color: #c3e6cb; }
+  100% { opacity: 1; }
+}
