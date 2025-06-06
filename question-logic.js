@@ -26,8 +26,24 @@ showAnswerBtn.addEventListener("click", () => {
 const correctBtn = document.getElementById("correct-btn");
 correctBtn.addEventListener("click", () => {
   const body = document.body;
-  const sounds = document.querySelectorAll(".correct-sound");
-  const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+ // const sounds = document.querySelectorAll(".correct-sound");
+ const sounds = [
+  new Audio("correct1.mp3"),
+  new Audio("correct2.mp3"),
+  new Audio("correct3.mp3"),
+  new Audio("correct4.mp3"),
+  new Audio("correct5.mp3"),
+  new Audio("correct6.mp3"),
+  new Audio("correct7.mp3"),
+  new Audio("correct8.mp3"),
+  new Audio("correct9.mp3"),
+  new Audio("correct10.mp3")
+];
+
+const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+randomSound.play();
+
+ // const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
   randomSound.play();
   body.classList.add("flash-success");
   setTimeout(() => body.classList.remove("flash-success"), 500);
